@@ -5,9 +5,16 @@
     <title>Title</title>
 </head>
 <body>
-    <div>
-        <h1>메인 페이지</h1>
-        <a href="/login-form"><button>로그인</button></a>
-    </div>
+<div>
+    <h1>메인 페이지</h1>
+    <a href="/login-form">
+        <button>로그인</button>
+    </a>
+</div>
+
+<script>
+    const token = document.cookie.replace(/(?:(?:^|.*;\s*)Authorization\s*=\s*([^;]*).*$)|^.*$/, "$1");
+    console.log(token)
+</script>
 </body>
 </html>

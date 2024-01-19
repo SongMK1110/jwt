@@ -1,7 +1,6 @@
 package com.app.jwt.common.jwt;
 
-import com.app.jwt.dto.request.RequestMemberDTO;
-import com.app.jwt.dto.response.ResponseMemberDTO;
+import com.app.jwt.dto.CustomUserInfoDTO;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -30,13 +29,13 @@ public class JwtUtil {
     }
 
     // Access Token 생성
-    public String createAccessToken(ResponseMemberDTO member) {
+    public String createAccessToken(CustomUserInfoDTO member) {
         return createToken(member, accessTokenExpTime);
     }
 
 
     // JWT 생성
-    private String createToken(ResponseMemberDTO member, long expireTime) {
+    private String createToken(CustomUserInfoDTO member, long expireTime) {
         Claims claims = Jwts.claims();
         claims.put("memberId", member.getMemberId());
         claims.put("email", member.getEmail());

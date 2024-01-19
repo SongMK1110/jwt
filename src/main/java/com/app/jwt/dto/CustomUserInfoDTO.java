@@ -1,9 +1,9 @@
-package com.app.jwt.dto.response;
+package com.app.jwt.dto;
 
 import lombok.Data;
 
 @Data
-public class ResponseMemberDTO {
+public class CustomUserInfoDTO {
     private Long memberId;
     private String email;
     private String name;

@@ -36,10 +36,10 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public String login(RequestMemberDTO requestMemberDTO) {
-        String result = memberService.login(requestMemberDTO);
-        log.info("token : " + result);
-        return "redirect:/";
+    @ResponseBody
+    public String login(@RequestBody RequestMemberDTO requestMemberDTO) {
+        log.info("request : " + requestMemberDTO);
+        return memberService.login(requestMemberDTO);
     }
 
     @PostMapping("/sign-up")

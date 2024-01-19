@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.app.jwt.mapper.MemberMapper">
 
-    <select id="login" resultType="ResponseMemberDTO">
+    <select id="login" resultType="CustomUserInfoDTO">
         SELECT  *
         FROM    `member`
         WHERE   1=1
@@ -13,4 +13,11 @@
         INSERT INTO `member` ( email, pw, name )
                      VALUES ( #{email}, #{pw}, #{name} )
     </insert>
+
+    <select id="findById" resultType="CustomUserInfoDTO">
+        SELECT  *
+        FROM    `member`
+        WHERE   1=1
+        AND     member_id = #{id}
+    </select>
 </mapper>
