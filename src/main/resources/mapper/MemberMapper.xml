@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.app.jwt.mapper.MemberMapper">
+
+    <select id="login" resultType="ResponseMemberDTO">
+        SELECT  *
+        FROM    `member`
+        WHERE   1=1
+        AND     email = #{email}
+    </select>
+
+    <insert id="signUp" parameterType="RequestSignUpDTO">
+        INSERT INTO `member` ( email, pw, name )
+                     VALUES ( #{email}, #{pw}, #{name} )
+    </insert>
+</mapper>
