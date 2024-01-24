@@ -18,19 +18,27 @@ public class JwtUtil {
 
     private final Key key;
     private final long accessTokenExpTime;
+    private final long refreshTokenExpTime;
 
     public JwtUtil(
             @Value("${jwt.secret}") String secretKey,
-            @Value("${jwt.expiration_time}") long accessTokenExpTime
+            @Value("${jwt.expiration_time}") long accessTokenExpTime,
+            @Value("${jwt.refresh_expiration_time}") long refreshTokenExpTime
     ) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
         this.accessTokenExpTime = accessTokenExpTime;
+        this.refreshTokenExpTime = refreshTokenExpTime;
     }
 
     // Access Token 생성
     public String createAccessToken(CustomUserInfoDTO member) {
         return createToken(member, accessTokenExpTime);
+    }
+
+    // refresh Token 생성
+    public String createRefreshToken(CustomUserInfoDTO member) {
+        return createToken(member, refreshTokenExpTime);
     }
 
 
@@ -40,14 +48,12 @@ public class JwtUtil {
         claims.put("memberId", member.getMemberId());
         claims.put("email", member.getEmail());
         claims.put("role", member.getRole());
-
-        ZonedDateTime now = ZonedDateTime.now();
-        ZonedDateTime tokenValidity = now.plusSeconds(expireTime);
+        claims.put("name", member.getName());
 
         return Jwts.builder()
                 .setClaims(claims)
-                .setIssuedAt(Date.from(now.toInstant()))
-                .setExpiration(Date.from(tokenValidity.toInstant()))
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + expireTime))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -57,21 +63,27 @@ public class JwtUtil {
         return parseClaims(token).get("memberId", Long.class);
     }
 
+    public boolean isTokenExpired(String token) {
+        Date expiration = parseClaims(token).getExpiration();
+        return expiration.before(new Date());
+    }
+
     // JWT 검증
-    public boolean validateToken(String token) {
+    public String validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-            return true;
+            return "success";
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             log.info("invalid JWT Token", e);
         } catch (ExpiredJwtException e) {
             log.info("Expired JWT Token", e);
+            return "expired accessToken";
         } catch (UnsupportedJwtException e) {
             log.info("Unsupported JWT Token", e);
         } catch (IllegalArgumentException e) {
             log.info("JWT claims string is empty", e);
         }
-        return false;
+        return "fail";
     }
 
     // JWT Claims 추출
@@ -82,6 +94,5 @@ public class JwtUtil {
             return e.getClaims();
         }
     }
-
 
 }

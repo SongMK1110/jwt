@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 </head>
 <body>
 <div>
@@ -10,11 +11,108 @@
     <a href="/login-form">
         <button>로그인</button>
     </a>
+    <button type="button" id="logout">로그아웃</button>
+    <hr>
+    <label> 제목 :
+        <input type="text" id="title">
+    </label>
+    <label> 내용 :
+        <input type="text" id="content">
+    </label>
+    <button type="button" id="insertBtn">등록</button>
+    <hr>
+    <table>
+        <thead>
+        <tr>
+            <th>No</th>
+            <th>제목</th>
+            <th>작성자</th>
+            <th>내용</th>
+        </tr>
+        </thead>
+        <tbody id="boardList">
+        </tbody>
+    </table>
 </div>
 
 <script>
-    const token = document.cookie.replace(/(?:(?:^|.*;\s*)Authorization\s*=\s*([^;]*).*$)|^.*$/, "$1");
-    console.log(token)
+
+    $(document).ready(function () {
+        let accessToken = document.cookie.replace(/(?:(?:^|.*;\s*)Authorization\s*=\s*([^;]*).*$)|^.*$/, "$1");
+
+        function insertBoard() {
+            const title = $("#title").val();
+            const content = $("#content").val();
+
+            $.ajax({
+                type: "post",
+                url: "/insert-board",
+                contentType: "application/json",
+                data: JSON.stringify({
+                    title: title,
+                    content: content
+                }),
+                success: function (result) {
+                    if (result === "success") {
+                        alert("등록 성공")
+                        location.href = "/"
+                    } else if (result === "token-expired") {
+                        refreshAccessToken(); // 여기에서만 호출
+                    } else {
+                        alert("등록 실패")
+                    }
+                },
+                error: function (error) {
+                    console.log(error)
+                }
+            });
+        }
+
+        function refreshAccessToken() {
+            $.ajax({
+                type: "post",
+                url: "/refresh",
+                success: function (data) {
+                    accessToken = data;
+                    alert("새로운 Access Token을 받아왔습니다!");
+                    insertBoard()
+                },
+                error: function (error) {
+                    console.error("Access Token 갱신 실패:", error);
+                }
+            });
+        }
+
+        $(document).on("click", "#logout", function () {
+            document.cookie = "Authorization=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            document.cookie = "RefreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            location.href = "/";
+        })
+
+        $.ajax({
+            type: "get",
+            url: "/board",
+            dataType: "json",
+            success: function (data) {
+                $.each(data, function (index, board) {
+                    $("#boardList").append("<tr>" +
+                        "<td>" + board.boardId + "</td>" +
+                        "<td>" + board.title + "</td>" +
+                        "<td>" + board.writer + "</td>" +
+                        "<td>" + board.content + "</td>" +
+                        "</tr>");
+                })
+            },
+            error: function (error) {
+                console.log(error)
+            }
+        })
+
+        $(document).on("click", "#insertBtn", function () {
+            insertBoard();
+        })
+
+    })
 </script>
 </body>
 </html>

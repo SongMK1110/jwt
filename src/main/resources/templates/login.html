@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <script src="https://code.jquery.com/jquery-3.7.1.js"
-            integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 </head>
 <body>
 <div>
@@ -38,21 +37,26 @@
                 pw: pw
             }),
             success: function (res) {
-                // 응답에서 토큰을 가져와서 "Bearer "를 붙여서 저장
-                const token = "Bearer " + res;
+                let accessToken = res.accessToken;
+                let refreshToken = res.refreshToken;
 
-                // 로컬 스토리지에 토큰 저장
-                localStorage.setItem("Authorization", token);
+                if (accessToken === "No User") {
+                    alert("회원가입 해줘");
+                    return;
+                }
 
-                console.log("Token: " + token);
+                // accessToken = "Bearer " + accessToken;
+                // refreshToken = "Bearer " + refreshToken;
+                // document.cookie = "Authorization=" + accessToken + "; path=/";
+                // document.cookie = "RefreshToken=" + refreshToken + "; path=/";
 
-                // 로그인 성공 후 페이지 리다이렉트
                 location.href = "/";
             },
             error: function (error) {
-                console.log(error)
+                console.log(error);
             }
-        })
+        });
+
     })
 </script>
 </body>

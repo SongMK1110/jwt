@@ -20,4 +20,26 @@
         WHERE   1=1
         AND     member_id = #{id}
     </select>
+
+    <select id="boardList" resultType="ResponseBoardDTO">
+        SELECT  *
+        FROM    board
+    </select>
+
+    <insert id="insertBoard" parameterType="RequestBoardDTO">
+        INSERT INTO board (title, writer, content)
+                    VALUES (#{title}, #{writer}, #{content})
+    </insert>
+
+    <insert id="updateRefreshToken" parameterType="RequestRefreshTokenDTO">
+        UPDATE `member`
+        SET refresh_token = #{refreshToken}
+        WHERE email = #{email}
+    </insert>
+
+    <select id="selectRefreshToken">
+        SELECT refresh_token
+        FROM `member`
+        WHERE member_id = #{memberId}
+    </select>
 </mapper>
