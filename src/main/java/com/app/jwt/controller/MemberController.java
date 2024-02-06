@@ -13,6 +13,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -110,13 +111,19 @@ public class MemberController {
 
     @PostMapping("/insert-board")
     @ResponseBody
-    public String insertBoard(@RequestBody RequestBoardDTO requestBoardDTO, @CookieValue("Authorization") String authorization) {
+    public String insertBoard(@RequestBody RequestBoardDTO requestBoardDTO, @CookieValue(value = "Authorization", defaultValue = "") String authorization) {
+
+        if(authorization.isEmpty()) {
+            return "fail";
+        }
 
         String token = authorization.substring(7);
 
-        if (jwtUtil.isTokenExpired(token)) {
-            return "token-expired";
-        }
+//        if (jwtUtil.isTokenExpired(token)) {
+//            return "token-expired";
+//        }
+
+
 
         // 토큰이 유효한 경우에만 아래의 코드가 실행됩니다.
         String username = jwtUtil.parseClaims(token).get("name", String.class);

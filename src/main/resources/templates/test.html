@@ -39,7 +39,7 @@
 
     $(document).ready(function () {
         let accessToken = document.cookie.replace(/(?:(?:^|.*;\s*)Authorization\s*=\s*([^;]*).*$)|^.*$/, "$1");
-
+        console.log(accessToken)
         function insertBoard() {
             const title = $("#title").val();
             const content = $("#content").val();
@@ -48,6 +48,9 @@
                 type: "post",
                 url: "/insert-board",
                 contentType: "application/json",
+                headers: {
+                    "Authorization": accessToken
+                },
                 data: JSON.stringify({
                     title: title,
                     content: content
@@ -57,7 +60,7 @@
                         alert("등록 성공")
                         location.href = "/"
                     } else if (result === "token-expired") {
-                        refreshAccessToken(); // 여기에서만 호출
+                        // refreshAccessToken(); // 여기에서만 호출
                     } else {
                         alert("등록 실패")
                     }
